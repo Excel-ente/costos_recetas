@@ -293,3 +293,43 @@
     }
   }
   
+
+
+  .ingredient-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+  }
+  
+  .ingredient-row .ingredient-product {
+    width: 100%;
+  }
+  
+  .ingredient-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .ingredient-details .form-input,
+  .ingredient-details .form-select,
+  .ingredient-details .ingredient-cost {
+    margin: 0;
+    text-align: center;
+  }
+  
+  .ingredient-cost {
+    font-weight: bold;
+    color: var(--accent);
+    background-color: var(--background);
+    padding: 0.5rem;
+    border-radius: var(--radius);
+  }
+  

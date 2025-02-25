@@ -1,161 +1,181 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Excel-ente | Calculadora de Recetas</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <meta name="theme-color" content="#2563eb">
-</head>
-<body>
-  <div id="recipeApp">
-    <!-- Brand Header -->
-    <header class="brand-header">
-      <img src="logo.png" alt="Excel-ente Logo" class="brand-logo">
-      <h1>Calculadora de Costos de Recetas</h1>
-      <p>Creado con 💞 por <strong>Excel-ente</strong></p>
-      <br>
-      <button id="installBtn" class="download-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Instalar App
-      </button>
-      <br>
-    </header>
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel-ente | Calculadora de Recetas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="./manifest.json">
 
-    <main class="container">
-      <!-- Ad Space Top -->
-      <div class="ad-space">
-        <span>📢 ¿Necesitas ayuda con Excel? Visita nuestros cursos en Excel-ente.com</span>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- incluyendo libreria Select2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="theme-color" content="#2563eb">
+  </head>
+  <body>
+    <div id="recipeApp">
+      <!-- Brand Header -->
+      <header class="brand-header">
+        <img src="logo.png" alt="Excel-ente Logo" class="brand-logo">
+        <h1>Calculadora de Costos de Recetas</h1>
+        <p>Creado con 💞 por <strong>Excel-ente</strong></p>
+        <br>
+        <button id="installBtn" class="download-btn" style="display:none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Instalar App
+        </button>
+        <br>
+      </header>
+
+      <main class="container">
+        <!-- Ad Space Top -->
+        <div class="ad-space">
+          <span>📢 ¿Necesitas ayuda con Excel? Visita nuestros cursos en Excel-ente.com</span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="tabs">
+          <button class="tab-btn active" data-tab="products">Productos</button>
+          <button class="tab-btn" data-tab="recipes">Recetas</button>
+        </nav>
+
+        <!-- Products Section -->
+        <section id="products" class="tab-content active">
+          <div class="section-header">
+            <input type="text" id="productSearch" class="form-input" placeholder="Buscar productos...">
+            <br>
+            <br>
+            <button id="showProductForm" class="btn-primary">Nuevo Producto</button>
+            <button id="exportProducts" class="btn-secondary">Exportar a Excel</button>
+            <br>
+            <br>
+          </div>
+          <div id="productsList"></div>
+        </section>
+
+        <!-- Recipes Section -->
+        <section id="recipes" class="tab-content">
+          <div class="section-header">
+            <input type="text" id="recipeSearch" class="form-input" placeholder="Buscar recetas...">
+            <br>
+            <br>
+            <button id="showRecipeForm" class="btn-primary">Nueva Receta</button>
+            <button id="exportRecipes" class="btn-secondary">Exportar a Excel</button>
+            <br>
+            <br>
+          </div>
+          <div id="recipesList"></div>
+        </section>
+
+        <!-- Ad Space Bottom -->
+        <div class="ad-space">
+          <span>💡 Optimiza tus cálculos con nuestras plantillas premium</span>
+        </div>
+      </main>
+
+      <!-- Product Modal -->
+      <div id="productModal" class="modal">
+        <div class="modal-content">
+          <h2 id="productFormTitle">Nuevo Producto</h2>
+          <form id="productForm">
+            <input type="hidden" id="productId">
+            <div class="form-group">
+              <label class="form-label" for="productName">Nombre del Producto</label>
+              <input type="text" id="productName" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="purchaseUnit">Unidad de Compra</label>
+              <select id="purchaseUnit" class="form-select" required>
+                <option value="Kilos">Kilos</option>
+                <option value="Gramos">Gramos</option>
+                <option value="Litros">Litros</option>
+                <option value="Mililitros">Mililitros</option>
+                <option value="Unidades">Unidades</option>
+                <option value="Onzas">Onzas</option>
+                <option value="Libras">Libras</option>
+                <option value="Metros">Metros</option>
+                <option value="Centimetros">Centímetros</option>
+                <option value="Mt2">Mt2</option>
+                <option value="Mt3">Mt3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="purchaseQuantity">Cantidad</label>
+              <input type="number" id="purchaseQuantity" class="form-input" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="totalCost">Costo Total</label>
+              <input type="number" id="totalCost" class="form-input" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Costo Unitario</label>
+              <output id="unitCost" class="form-input">$0.00</output>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Guardar</button>
+              <button type="button" onclick="closeProductModal()" class="btn-secondary">Cancelar</button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <!-- Navigation -->
-      <nav class="tabs">
-        <button class="tab-btn active" data-tab="products">Productos</button>
-        <button class="tab-btn" data-tab="recipes">Recetas</button>
-      </nav>
+      <!-- Recipe Modal -->
+      <div id="recipeModal" class="modal">
+        <div class="modal-content">
+          <h2 id="recipeFormTitle">Nueva Receta</h2>
+          <form id="recipeForm">
 
-      <!-- Products Section -->
-      <section id="products" class="tab-content active">
-        <div class="section-header">
-          <input type="text" id="productSearch" class="form-input" placeholder="Buscar productos...">
-          <br>
-          <br>
-          <button id="showProductForm" class="btn-primary">Nuevo Producto</button>
-          <button id="exportProducts" class="btn-secondary">Exportar a Excel</button>
-          <br>
-          <br>
+            <input type="hidden" id="recipeId">
+
+            <div class="form-group">
+              <label class="form-label" for="recipeName">Nombre de la Receta</label>
+              <input type="text" id="recipeName" class="form-input" required>
+            </div>
+            <div id="ingredientsContainer"></div>
+            <button type="button" id="addIngredient" class="btn-secondary">Agregar Ingrediente</button>
+            <div class="form-group">
+              <label class="form-label">Costo Total</label>
+              <output id="recipeTotalCost" class="form-input">$0.00</output>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="calculationType">Tipo de Cálculo</label>
+              <select id="calculationType" class="form-select">
+                <option value="profit">Calcular Precio por % Ganancia</option>
+                <option value="price">Calcular % Ganancia desde Precio</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="profitPercentage">% Ganancia</label>
+              <input type="number" id="profitPercentage" class="form-input" min="0" step="1" value="0">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="salePrice">Precio de Venta</label>
+              <input type="number" id="salePrice" class="form-input" min="0" step="0.01" value="0">
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="recalculateBtn" class="btn-secondary">Recalcular</button>
+              <button type="submit" class="btn-primary">Guardar</button>
+              <button type="button" onclick="closeRecipeModal()" class="btn-secondary">Cancelar</button>
+            </div>
+          </form>
         </div>
-        <div id="productsList"></div>
-      </section>
-
-      <!-- Recipes Section -->
-      <section id="recipes" class="tab-content">
-        <div class="section-header">
-          <input type="text" id="recipeSearch" class="form-input" placeholder="Buscar recetas...">
-          <br>
-          <br>
-          <button id="showRecipeForm" class="btn-primary">Nueva Receta</button>
-          <button id="exportRecipes" class="btn-secondary">Exportar a Excel</button>
-          <br>
-          <br>
-        </div>
-        <div id="recipesList"></div>
-      </section>
-
-      <!-- Ad Space Bottom -->
-      <div class="ad-space">
-        <span>💡 Optimiza tus cálculos con nuestras plantillas premium</span>
-      </div>
-    </main>
-
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-      <div class="modal-content">
-        <h2 id="productFormTitle">Nuevo Producto</h2>
-        <form id="productForm">
-          <input type="hidden" id="productId">
-          <div class="form-group">
-            <label class="form-label" for="productName">Nombre del Producto</label>
-            <input type="text" id="productName" class="form-input" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="purchaseUnit">Unidad de Compra</label>
-            <select id="purchaseUnit" class="form-select" required>
-              <option value="Kilos">Kilos</option>
-              <option value="Gramos">Gramos</option>
-              <option value="Litros">Litros</option>
-              <option value="Mililitros">Mililitros</option>
-              <option value="Unidades">Unidades</option>
-              <option value="Onzas">Onzas</option>
-              <option value="Libras">Libras</option>
-              <option value="Metros">Metros</option>
-              <option value="Centimetros">Centímetros</option>
-              <option value="Mt2">Mt2</option>
-              <option value="Mt3">Mt3</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="purchaseQuantity">Cantidad</label>
-            <input type="number" id="purchaseQuantity" class="form-input" min="0.01" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="totalCost">Costo Total</label>
-            <input type="number" id="totalCost" class="form-input" min="0.01" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Costo Unitario</label>
-            <output id="unitCost" class="form-input">$0.00</output>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">Guardar</button>
-            <button type="button" onclick="closeProductModal()" class="btn-secondary">Cancelar</button>
-          </div>
-        </form>
       </div>
     </div>
 
-    <!-- Recipe Modal -->
-    <div id="recipeModal" class="modal">
-      <div class="modal-content">
-        <h2 id="recipeFormTitle">Nueva Receta</h2>
-        <form id="recipeForm">
-          <input type="hidden" id="recipeId">
-          <div class="form-group">
-            <label class="form-label" for="recipeName">Nombre de la Receta</label>
-            <input type="text" id="recipeName" class="form-input" required>
-          </div>
-          <div id="ingredientsContainer"></div>
-          <button type="button" id="addIngredient" class="btn-secondary">Agregar Ingrediente</button>
-          <div class="form-group">
-            <label class="form-label">Costo Total</label>
-            <output id="recipeTotalCost" class="form-input">$0.00</output>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="profitPercentage">% Ganancia</label>
-            <input type="number" id="profitPercentage" class="form-input" min="0" step="1" value="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="salePrice">Precio de Venta</label>
-            <input type="number" id="salePrice" class="form-input" min="0" step="0.01" value="0">
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">Guardar</button>
-            <button type="button" onclick="closeRecipeModal()" class="btn-secondary">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
+    <script src="app.js"></script>
+  </body>
+  </html>
 
