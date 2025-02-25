@@ -1,10 +1,12 @@
-const CACHE_NAME = 'recetas-cache-v1';
+const CACHE_NAME = 'recetas-cache-v2.0';
 const urlsToCache = [
   './',
   './index.html',
   './styles.css',
   './app.js'
-  // Agrega aquí otros recursos (imágenes, etc.)
+  './logo.png',
+  './favicon.png'
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
