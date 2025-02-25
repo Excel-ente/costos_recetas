@@ -400,6 +400,7 @@ document.getElementById('exportRecipes').addEventListener('click', () => {
 
 const tabBtns = document.querySelectorAll('.tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
+
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     tabBtns.forEach(b => b.classList.remove('active'));
@@ -422,72 +423,58 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Remover 'active' de todas las pestañas y ocultar sus contenidos
+    tabBtns.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => {
+      c.classList.remove('active');
+      c.style.display = 'none';
+    });
+
+    // Activar el botón clickeado y su contenido asociado
+    btn.classList.add('active');
+    const tabId = btn.getAttribute('data-tab');
+    const activeContent = document.getElementById(tabId);
+    activeContent.classList.add('active');
+    activeContent.style.display = 'block';
+  });
+});
+
+
+
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Previene que el navegador muestre el prompt por defecto
   e.preventDefault();
-  // Guarda el evento para usarlo más tarde
   deferredPrompt = e;
-  // Muestra tu botón de instalación personalizado (por ejemplo, #installBtn)
   document.getElementById('installBtn').style.display = 'block';
 });
 
-// Cuando el usuario haga clic en tu botón de instalación:
 document.getElementById('installBtn').addEventListener('click', () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-        console.log('El usuario aceptó instalar la app');
+        console.log('El usuario aceptó instalar la PWA');
       } else {
         console.log('El usuario rechazó la instalación');
       }
       deferredPrompt = null;
-      // Oculta el botón de instalación si es necesario
       document.getElementById('installBtn').style.display = 'none';
     });
   }
 });
 
-
-// Asegurar que el código de las pestañas funcione correctamente
-document.addEventListener('DOMContentLoaded', () => {
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  // Aseguramos que solo se muestre la sección con la clase 'active'
-  tabContents.forEach(c => {
-    if (!c.classList.contains('active')) {
-      c.style.display = 'none';
-    } else {
-      c.style.display = 'block';
+// 🔹 Mostrar mensaje para instalar manualmente si el botón no aparece
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if (!deferredPrompt) {
+      document.getElementById('manualInstallMessage').style.display = 'block';
     }
-  });
-
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Remover 'active' de todas las pestañas y ocultar sus contenidos
-      tabBtns.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => {
-        c.classList.remove('active');
-        c.style.display = 'none';
-      });
-
-      // Activar el botón clickeado y su contenido asociado
-      btn.classList.add('active');
-      const tabId = btn.getAttribute('data-tab');
-      const activeContent = document.getElementById(tabId);
-      activeContent.classList.add('active');
-      activeContent.style.display = 'block';
-    });
-  });
+  }, 3000);
 });
-
-
-// El resto del código JavaScript se mantiene igual...
-
-
 
 displayProducts();
 displayRecipes();
